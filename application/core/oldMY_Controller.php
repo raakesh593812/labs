@@ -11,7 +11,7 @@ class MY_Controller extends CI_Controller
 class Admin_Controller extends MY_Controller 
 {
 	
-	var $permission = array();
+	
 
 	public function __construct() 
 	{
@@ -26,10 +26,7 @@ class Admin_Controller extends MY_Controller
 			$user_id = $this->session->userdata('id');
 			$this->load->model('model_groups');
 			$group_data = $this->model_groups->getUserGroupByUserId($user_id);
-			
-			$this->data['user_permission'] = unserialize($group_data['permission']);
-
-			$this->permission = unserialize($group_data['permission']);
+					
 		}
 	}
 
