@@ -35,7 +35,7 @@ $config['base_url'] = 'http://34.67.218.160/labstack/';
 | variable so that it is blank.
 |
 */
-$config['index_page'] = 'index.php';
+$config['index_page'] = '';
 
 /*
 |--------------------------------------------------------------------------
