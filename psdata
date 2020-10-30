@@ -111,3 +111,25 @@ $jsonobj = [pscustomobject]@{
 
 $json = $jsonobj | ConvertTo-Json -Compress
 #Post-LogAnalyticsData -customerId $customerId -sharedKey $sharedKey -body ([System.Text.Encoding]::UTF8.GetBytes($json)) -logType $logType
+
+
+
+
+=================================================
+
+
+Get-AzStorageAccount  | select id,StorageAccountName,ResourceGroupName,@{Label="sku";Expression={$_.Sku.Name}} | Where-Object {$_.Sku -eq "Standard_RAGRS"} | foreach-object{
+    $temvar = Get-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -IncludeGeoReplicationStats | select id, StorageAccountName, @{Label="synctime";Expression={$_.GeoReplicationStats.LastSyncTime}} , `
+    @{Label="Status";Expression={$_.GeoReplicationStats.Status}} , `
+    @{Label="CanFailover";Expression={$_.GeoReplicationStats.CanFailover}}
+
+   $subid = $temvar.id -split('/')
+ $lagtime = (get-date).ToUniversalTime() -  $temvar.synctime 
+
+$jsonobj = [pscustomobject]@{
+        StorageAccountName = $temvar.StorageAccountName
+        Lag = $lagtime.TotalMinutes
+       Subname = (Get-AzSubscription -SubscriptionId $subid[2] | select -ExpandProperty Name)
+    }
+
+
