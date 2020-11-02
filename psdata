@@ -1,7 +1,9 @@
 # Replace with your Workspace ID
+#how to get customer id cmmand: Get-AzOperationalInsightsWorkspace -ResourceGroupName RG_name -Name <loganalyticalworkspace name>
 $CustomerId = "aaa80e01-5ff8-4186-90b1-1262a9ba2c6c"  
 
 # Replace with your Primary Key
+#command: Get-AzOperationalInsightsWorkspaceSharedKey -ResourceGroupName demo -Name testlaws01
 $SharedKey = "VuxyVL6CnyvetJUP/euWrwfDaA/6ZK1tbqax/BSO+4dyKIfJSurVCD5PeMQ+SfUnXd4Q3+Eqh9UNpsEPVTzPmg=="
 
 # Specify the name of the record type that you'll be creating
