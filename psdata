@@ -133,5 +133,9 @@ $jsonobj = [pscustomobject]@{
         Lag = $lagtime.TotalMinutes
        Subname = (Get-AzSubscription -SubscriptionId $subid[2] | select -ExpandProperty Name)
     }
+    
+    ++++++++++++++++++++++++
+    Get-AzKeyVault | ForEach-Object {
+ Get-AzKeyVaultSecret -VaultName $_.VaultName }
 
 
