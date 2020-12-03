@@ -1,0 +1,32 @@
+let results=SparkListenerEvent_CL
+|where  Event_s  contains "SparkListenerJobStart"
+| extend metricsns=columnifexists("Properties_spark_metrics_namespace_s",Properties_spark_app_id_s)
+| extend apptag=iif(isnotempty(metricsns),metricsns,Properties_spark_app_id_s)
+| project Job_ID_d,apptag,Properties_spark_databricks_clusterUsageTags_clusterName_s,Submission_Time_d,TimeGenerated
+| order by TimeGenerated asc  nulls last 
+| join kind= inner (    SparkListenerEvent_CL    |  where Event_s contains "SparkListenerJobEnd"    | where Job_Result_Result_s contains "JobSucceeded"    | project Event_s,Job_ID_d,Completion_Time_d,TimeGenerated) on Job_ID_d;results| extend slice=strcat(Properties_spark_databricks_clusterUsageTags_clusterName_s,"-",apptag,"_90%")| extend jobDuration=Completion_Time_d - Submission_Time_d | summarize percentile(jobDuration,90)  by bin(TimeGenerated,  1m), slice| order by TimeGenerated asc nulls last
+
+
+
+let results=SparkListenerEvent_CL
+|where  Event_s  contains "SparkListenerJobStart"
+| extend metricsns=columnifexists("Properties_spark_metrics_namespace_s",Properties_spark_app_id_s)
+| extend apptag=iif(isnotempty(metricsns),metricsns,Properties_spark_app_id_s)
+| project Job_ID_d,apptag,Properties_spark_databricks_clusterUsageTags_clusterName_s,Submission_Time_d,TimeGenerated
+| order by TimeGenerated asc  nulls last 
+| join kind= inner (    SparkListenerEvent_CL    |  where Event_s contains "SparkListenerJobEnd"    | where Job_Result_Result_s contains "JobSucceeded"    | project Event_s,Job_ID_d,Completion_Time_d,TimeGenerated) on Job_ID_d;results| extend slice=strcat(Properties_spark_databricks_clusterUsageTags_clusterName_s,"-",apptag,"_50%")| extend jobDuration=Completion_Time_d - Submission_Time_d | summarize percentile(jobDuration,50)  by bin(TimeGenerated,  1m), slice| order by TimeGenerated asc nulls last
+
+
+let results=SparkListenerEvent_CL
+|  where  Event_s  contains "SparkListenerJobStart"
+| extend metricsns=columnifexists("Properties_spark_metrics_namespace_s",Properties_spark_app_id_s)
+| extend apptag=iif(isnotempty(metricsns),metricsns,Properties_spark_app_id_s)
+| project Job_ID_d,apptag,Properties_spark_databricks_clusterUsageTags_clusterName_s,Submission_Time_d,TimeGenerated
+| order by TimeGenerated asc  nulls last | join kind= inner (    SparkListenerEvent_CL    |  where Event_s contains "SparkListenerJobEnd"    | where Job_Result_Result_s contains "JobSucceeded"    | project Event_s,Job_ID_d,Completion_Time_d,TimeGenerated) on Job_ID_d;results| extend slice=strcat(Properties_spark_databricks_clusterUsageTags_clusterName_s,"-",apptag ,"_30%")| extend jobDuration=Completion_Time_d - Submission_Time_d | summarize percentile(jobDuration,30)  by bin(TimeGenerated,  1m), slice| order by TimeGenerated asc nulls last
+
+
+SparkListenerEvent_CL
+|  where Event_s contains "queryprogressevent"
+| extend sname=strcat(progress_name_s,"-","triggerexecution") 
+| summarize percentile(progress_durationMs_triggerExecution_d,90)  by bin(TimeGenerated, 1m), sname
+| order by  TimeGenerated   asc  nulls last
